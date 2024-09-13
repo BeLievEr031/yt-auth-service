@@ -1,4 +1,13 @@
+import express from 'express';
 import logger from './config/logger';
+import Config from './config/config';
 
-const x = '45';
-logger.info(x);
+const app = express();
+
+const startServer = () => {
+  app.listen(Config.PORT, () => {
+    logger.error(`Connected to server ${Config.PORT}`);
+  });
+};
+
+startServer();

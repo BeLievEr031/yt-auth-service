@@ -4,9 +4,9 @@
 [*] prettier {cm:2024-09-13}
 [*] husky {cm:2024-09-13}
 [*] jest testing {cm:2024-09-13}
-[*] logger [winston]
-[*] express js
-[*] dot env
+[*] logger [winston] {cm:2024-09-13}
+[*] express js {cm:2024-09-13}
+[*] dot env {cm:2024-09-13}
 [*] database
 [*] first code
 [*] colorfull terminal
