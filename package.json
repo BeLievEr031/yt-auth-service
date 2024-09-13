@@ -12,9 +12,9 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*": [
-      "npm run formate:fix",
-      "npm run lint:fix"
+    "*.ts": [
+      "npm run lint:fix",
+      "npm run formate:fix"
     ]
   },
   "keywords": [],
