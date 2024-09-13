@@ -1,3 +1,4 @@
+import logger from './config/logger';
+
 const x = '45';
-console.log(x);
-console.log(x);
+logger.info(x);
