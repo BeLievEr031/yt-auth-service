@@ -2,7 +2,7 @@
 [*] typescript setup {cm:2024-09-13}
 [*] eslint {cm:2024-09-13}
 [*] prettier {cm:2024-09-13}
-[*] husky
+[*] husky {cm:2024-09-13}
 [*] jest testing
 [*] logger
 [*] express js
