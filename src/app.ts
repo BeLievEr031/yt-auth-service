@@ -1,2 +1,2 @@
-const x = 45;
+const x = '45';
 console.log(x);

@@ -1,7 +1,7 @@
 [*] Git init {cm:2024-09-13}
 [*] typescript setup {cm:2024-09-13}
-[*] eslint
-[*] prettier
+[*] eslint {cm:2024-09-13}
+[*] prettier {cm:2024-09-13}
 [*] husky
 [*] jest testing
 [*] logger

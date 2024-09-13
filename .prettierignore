@@ -1,0 +1,47 @@
+# Ignore all node modules
+node_modules/
+
+# Ignore build directories
+dist/
+build/
+
+# Ignore bundled JS files
+*.bundle.js
+*.min.js
+
+# Ignore generated files
+coverage/
+public/
+
+# Ignore environment files
+.env
+.env.local
+.env.production
+.env.test
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+
+# Ignore specific configuration files
+*.config.js
+
+# Ignore markdown files
+*.md
+
+# Ignore all images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+
+# Ignore specific file or directory
+src/legacy-code/
+docs/README.md
+
+*.json
+**/*/*.json
+tsconfig.json
+eslint.config.mjs
+.prettierrc
