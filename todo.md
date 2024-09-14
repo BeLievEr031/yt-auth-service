@@ -7,8 +7,8 @@
 [*] logger [winston] {cm:2024-09-13}
 [*] express js {cm:2024-09-13}
 [*] dot env {cm:2024-09-13}
+[*] colorfull terminal {cm:2024-09-14}
+[*] first code {cm:2024-09-14}
 [*] database
-[*] first code
-[*] colorfull terminal
 [*] commitlinting
 [*] db-migration
