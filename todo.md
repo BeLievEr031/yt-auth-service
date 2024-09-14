@@ -9,6 +9,6 @@
 [*] dot env {cm:2024-09-13}
 [*] colorfull terminal {cm:2024-09-14}
 [*] first code {cm:2024-09-14}
-[*] database
+[*] database {cm:2024-09-14}
 [*] commitlinting
 [*] db-migration
