@@ -12,7 +12,9 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-.env.*
+.env.production
+.env.testing
+.env.development
 
 node_modules
 
