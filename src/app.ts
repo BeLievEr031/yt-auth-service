@@ -18,7 +18,7 @@ app.get('/test-route', (_req: Request, res: Response) => {
 
 const startServer = () => {
   app.listen(Config.PORT, () => {
-    logger.info(`Server is running on port ${Config.PORT}`);
+    logger.error(`Server is running on port ${Config.PORT}`);
   });
 };
 

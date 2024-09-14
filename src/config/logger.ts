@@ -4,7 +4,7 @@ const colors = {
   error: 'red',
   warn: 'yellow',
   info: 'green',
-  debug: 'blue',
+  http: 'blue',
 };
 
 winston.addColors(colors);
