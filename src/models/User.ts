@@ -31,7 +31,7 @@ const userSchema = new Schema<User>(
     // User's unique YouTube-like channel name
     channelName: {
       type: String,
-      required: true,
+      // required: true,
       unique: true,
       minlength: 3,
       maxlength: 30,
@@ -125,10 +125,9 @@ const userSchema = new Schema<User>(
   },
   {
     timestamps: true,
-    versionKey: true,
   },
 );
 
 const User = model<User>('User', userSchema);
 
-export default userSchema;
+export default User;

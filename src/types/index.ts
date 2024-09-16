@@ -34,3 +34,10 @@ export interface User {
 export interface UserSignUpRequest extends Request {
   body: User;
 }
+
+export interface GlobalError extends Error {
+  statusCode: number;
+  message: string;
+  stackTrace: string;
+  success: boolean;
+}
