@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { Request } from 'express';
 export type UserRole = 'USER' | 'ADMIN' | 'MANAGER';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'BANNED';
 
@@ -28,4 +29,8 @@ export interface User {
     isRead: boolean;
     createdAt: Date;
   }[];
+}
+
+export interface UserSignUpRequest extends Request {
+  body: User;
 }
