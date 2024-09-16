@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Request, Response, NextFunction, Router } from 'express';
 import AuthController from '../controllers/AuthController';
 import { AuthService } from '../services';
-import { UserSignUpRequest } from '../types';
 import { userRegisterValidator } from '../validators/auth-validator';
+import { UserSignUpRequest } from '../types';
 
 const userRouter = Router();
 const authService = new AuthService();

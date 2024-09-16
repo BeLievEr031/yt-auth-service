@@ -8,11 +8,16 @@ import createHttpError from 'http-errors';
 class AuthController {
   constructor(private authService: AuthService) {}
 
-  async register(req: UserSignUpRequest, res: Response, next: NextFunction) {
+  public async register(
+    req: UserSignUpRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        res.status(400).json({ errors: errors.array() });
+        return;
       }
 
       const { email, password, name } = req.body;
@@ -29,6 +34,7 @@ class AuthController {
       res.status(200).json({ user, message: 'User created.' });
     } catch (error) {
       next(error);
+      return;
     }
   }
 }
