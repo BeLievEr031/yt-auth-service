@@ -8,8 +8,8 @@
     "lint:fix": "npx eslint . --fix",
     "formate:check": "npx prettier . --check",
     "formate:fix": "npx prettier . --write",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/app.ts",
-    "start": "cross-env NODE_ENV=production nodemon ./src/app.ts",
+    "dev": "cross-env NODE_ENV=development nodemon ./src/server.ts",
+    "start": "cross-env NODE_ENV=production nodemon ./src/server.ts",
     "prepare": "husky"
   },
   "lint-staged": {

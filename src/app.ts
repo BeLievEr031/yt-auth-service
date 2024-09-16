@@ -1,27 +1,15 @@
 import express from 'express';
 import morgan from 'morgan';
-import logger from './config/logger';
-import Config from './config/config';
-import dbConnect from './db/dbConnect';
 import { morganStream } from './utils';
+import { userRouter } from './routes';
 
 const app = express();
 app.use(morgan('tiny', { stream: morganStream }));
 
-const startServer = () => {
-  const PORT = Config.PORT;
-  app.listen(PORT, () => {
-    logger.info(`Server is running on port ${PORT}`);
-  });
-};
+app.use(express.json({ limit: '1MB' }));
+app.use(express.urlencoded({ extended: true, limit: '1MB' }));
 
-dbConnect()
-  .then(() => {
-    startServer();
-  })
-  .catch((error) => {
-    if (error instanceof Error) {
-      logger.error(`Failed to connect db: ${error.message}`);
-      process.exit(1);
-    }
-  });
+// Routes
+app.use('/api/v1/user', userRouter);
+
+export default app;
