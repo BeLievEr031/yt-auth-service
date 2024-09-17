@@ -10,7 +10,7 @@ describe('POST /register', () => {
   });
 
   beforeEach(async () => {
-    await User.collection.drop();
+    await User.deleteMany({});
   });
 
   afterAll(async () => {
@@ -18,7 +18,7 @@ describe('POST /register', () => {
   });
 
   describe('All Fields given', () => {
-    it('should register a new user', async () => {
+    it('should return 200 status code.', async () => {
       const userData = {
         email: 'test@example.com',
         name: 'test',
@@ -33,6 +33,37 @@ describe('POST /register', () => {
       expect((response.body as Record<string, string>).password).not.toBe(
         userData.password,
       );
+    });
+
+    it('should return 400 status code if user exists.', async () => {
+      const userData = {
+        email: 'test@example.com',
+        name: 'test',
+        password: 'password123',
+      };
+
+      await request(app).post('/api/v1/user/register').send(userData);
+
+      const response = await request(app)
+        .post('/api/v1/user/register')
+        .send(userData);
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('Some Fields are missing.', () => {
+    it('should return 400 if user body is not given.', async () => {
+      const userData = {
+        email: 'test@example.com',
+        name: 'test',
+      };
+
+      const response = await request(app)
+        .post('/api/v1/user/register')
+        .send(userData);
+
+      expect(response.statusCode).toBe(400);
     });
   });
 });

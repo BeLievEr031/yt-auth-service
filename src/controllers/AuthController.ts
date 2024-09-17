@@ -6,6 +6,7 @@ import createHttpError from 'http-errors';
 import QueryService from '../services/QueryService';
 import bcrypt from 'bcryptjs';
 import logger from '../config/logger';
+import Config from '../config/config';
 
 class AuthController {
   constructor(
@@ -30,9 +31,10 @@ class AuthController {
         return;
       }
 
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
+      const hashedPassword = await this.hashPassword(
+        +Config.SALT_ROUND!,
+        password,
+      );
       user = await this.authService.create({ email, hashedPassword, name });
 
       logger.info(`User created successfully!!!`);
@@ -45,6 +47,12 @@ class AuthController {
       next(error);
       return;
     }
+  }
+
+  async hashPassword(saltRound: number, password: string) {
+    const salt = await bcrypt.genSalt(saltRound);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
   }
 }
 
