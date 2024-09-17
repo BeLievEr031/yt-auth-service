@@ -2,21 +2,38 @@
 import { Request, Response, NextFunction, Router } from 'express';
 import AuthController from '../controllers/AuthController';
 import { AuthService } from '../services';
-import { userRegisterValidator } from '../validators/auth-validator';
-import { UserSignUpRequest } from '../types';
+import {
+  userLoginValidator,
+  userRegisterValidator,
+} from '../validators/auth-validator';
+import { UserSignInRequest, UserSignUpRequest } from '../types';
 import User from '../models/User';
 import QueryService from '../services/QueryService';
+import TokenService from '../services/TokenService';
+import Refresh from '../models/Refresh';
 
 const userRouter = Router();
 const authService = new AuthService(User);
 const queryService = new QueryService(User);
-const authController = new AuthController(authService, queryService);
+const tokenService = new TokenService(Refresh);
+const authController = new AuthController(
+  authService,
+  queryService,
+  tokenService,
+);
 
 userRouter.post(
   '/register',
   userRegisterValidator,
   (req: Request, res: Response, next: NextFunction) =>
     authController.register(req as UserSignUpRequest, res, next),
+);
+
+userRouter.post(
+  '/login',
+  userLoginValidator,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.login(req as UserSignInRequest, res, next),
 );
 
 export default userRouter;
