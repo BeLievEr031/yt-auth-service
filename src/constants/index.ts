@@ -11,5 +11,4 @@ const USER_STATUS = {
   BLOCKED: 'BLOCKED',
 };
 
-
 export { ROLES, USER_STATUS };

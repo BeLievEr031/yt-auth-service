@@ -19,7 +19,7 @@ class AuthController {
     private authService: AuthService,
     private queryService: QueryService,
     private tokenService: TokenService,
-  ) { }
+  ) {}
 
   async register(req: UserSignUpRequest, res: Response, next: NextFunction) {
     try {
