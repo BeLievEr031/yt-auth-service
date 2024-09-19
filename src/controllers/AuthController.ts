@@ -19,7 +19,7 @@ class AuthController {
     private authService: AuthService,
     private queryService: QueryService,
     private tokenService: TokenService,
-  ) {}
+  ) { }
 
   async register(req: UserSignUpRequest, res: Response, next: NextFunction) {
     try {
@@ -72,6 +72,12 @@ class AuthController {
         return;
       }
 
+      if (user.devices == 0) {
+        const err = createHttpError(429, 'Device limit exceeded.');
+        next(err);
+        return;
+      }
+
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         const err = createHttpError(401, 'Invalid credentials.');
@@ -101,6 +107,8 @@ class AuthController {
         sameSite: 'strict',
       });
 
+      user.devices = user.devices - 1;
+      await user.save();
       await this.tokenService.persistRefreshToken(user._id, refreshToken);
       res
         .status(200)
