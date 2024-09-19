@@ -26,3 +26,15 @@ export interface GlobalError extends Error {
   stackTrace: string;
   success: boolean;
 }
+
+export interface AuthCookie {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AuthenticateReq extends Request {
+  auth: {
+    id: string;
+    email: string;
+  };
+}

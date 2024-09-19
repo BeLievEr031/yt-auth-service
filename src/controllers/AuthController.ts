@@ -1,6 +1,10 @@
 import { Response, NextFunction } from 'express';
 import { AuthService } from '../services';
-import { UserSignInRequest, UserSignUpRequest } from '../types';
+import {
+  AuthenticateReq,
+  UserSignInRequest,
+  UserSignUpRequest,
+} from '../types';
 import { validationResult } from 'express-validator';
 import createHttpError from 'http-errors';
 import QueryService from '../services/QueryService';
@@ -104,6 +108,18 @@ class AuthController {
     } catch (error) {
       next(error);
       return;
+    }
+  }
+
+  async self(req: AuthenticateReq, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.auth;
+      const user = await this.queryService.findById(id);
+      res.status(200).json({
+        user,
+      });
+    } catch (error) {
+      next(error);
     }
   }
 
