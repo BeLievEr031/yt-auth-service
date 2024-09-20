@@ -1,8 +1,10 @@
 import { Request } from 'express';
+import { Types } from 'mongoose';
 export type UserRole = 'USER' | 'ADMIN' | 'MANAGER';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'BANNED';
 
 export interface User {
+  _id?: Types.ObjectId;
   email: string;
   name: string;
   password: string;
@@ -37,4 +39,9 @@ export interface AuthenticateReq extends Request {
     id: string;
     email: string;
   };
+}
+
+export interface IRefreshTokenPayload {
+  sub: string | Types.ObjectId;
+  id: string;
 }

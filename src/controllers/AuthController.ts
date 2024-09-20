@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import { AuthService } from '../services';
 import {
   AuthenticateReq,
+  User,
   UserSignInRequest,
   UserSignUpRequest,
 } from '../types';
@@ -13,12 +14,14 @@ import logger from '../config/logger';
 import Config from '../config/config';
 import TokenService from '../services/TokenService';
 import { JwtPayload } from 'jsonwebtoken';
+import UserDto from '../dtos/Auth-dto';
 
 class AuthController {
   constructor(
     private authService: AuthService,
     private queryService: QueryService,
     private tokenService: TokenService,
+    private userDto: UserDto,
   ) {}
 
   async register(req: UserSignUpRequest, res: Response, next: NextFunction) {
@@ -91,7 +94,6 @@ class AuthController {
       };
 
       const accessToken = this.tokenService.generateAccessToken(payload);
-      const refreshToken = this.tokenService.generateRefreshToken(payload);
 
       res.cookie('accessToken', accessToken, {
         httpOnly: true,
@@ -100,6 +102,17 @@ class AuthController {
         sameSite: 'strict',
       });
 
+      user.devices = user.devices - 1;
+      await user.save();
+
+      const refresh = await this.tokenService.persistRefreshToken(user._id);
+      const refreshPayload: JwtPayload = {
+        ...payload,
+        sub: String(refresh._id),
+      };
+
+      const refreshToken =
+        this.tokenService.generateRefreshToken(refreshPayload);
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
@@ -107,9 +120,6 @@ class AuthController {
         sameSite: 'strict',
       });
 
-      user.devices = user.devices - 1;
-      await user.save();
-      await this.tokenService.persistRefreshToken(user._id, refreshToken);
       res
         .status(200)
         .json({ user: user, message: 'User logged in successfully' });
@@ -123,9 +133,55 @@ class AuthController {
     try {
       const { id } = req.auth;
       const user = await this.queryService.findById(id);
+
       res.status(200).json({
-        user,
+        user: this.userDto.userDto(user as User),
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async refreshToken(req: AuthenticateReq, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.auth;
+      const user = await this.queryService.findByEmail(email);
+      if (!user) {
+        const err = createHttpError(401, 'Invalid credentials.');
+        next(err);
+        return;
+      }
+
+      const payload: JwtPayload = {
+        id: user._id,
+        email: user.email,
+      };
+
+      const accessToken = this.tokenService.generateAccessToken(payload);
+
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 1000 * 60 * 60,
+        sameSite: 'strict',
+      });
+
+      const refresh = await this.tokenService.persistRefreshToken(user._id);
+      const refreshPayload: JwtPayload = {
+        ...payload,
+        sub: String(refresh._id),
+      };
+
+      const refreshToken =
+        this.tokenService.generateRefreshToken(refreshPayload);
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+        sameSite: 'strict',
+      });
+
+      res.status(200).json({ message: 'token refreshed.' });
     } catch (error) {
       next(error);
     }

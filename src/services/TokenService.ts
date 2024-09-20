@@ -28,10 +28,9 @@ class TokenService {
     return refreshToken;
   }
 
-  async persistRefreshToken(id: Types.ObjectId, refreshToken: string) {
+  async persistRefreshToken(id: Types.ObjectId) {
     return await this.refreshTokenRepository.create({
       userid: id,
-      token: refreshToken,
     });
   }
 }

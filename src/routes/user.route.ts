@@ -16,15 +16,19 @@ import QueryService from '../services/QueryService';
 import TokenService from '../services/TokenService';
 import Refresh from '../models/Refresh';
 import authenticate from '../middleware/authenticate';
+import UserDto from '../dtos/Auth-dto';
+import validateRefreshToken from '../middleware/validateRefreshToken';
 
 const userRouter = Router();
 const authService = new AuthService(User);
 const queryService = new QueryService(User);
 const tokenService = new TokenService(Refresh);
+const userDto = new UserDto();
 const authController = new AuthController(
   authService,
   queryService,
   tokenService,
+  userDto,
 );
 
 userRouter.post(
@@ -46,5 +50,12 @@ userRouter.get(
   authenticate,
   (req: Request, res: Response, next: NextFunction) =>
     authController.self(req as AuthenticateReq, res, next),
+);
+
+userRouter.get(
+  '/refresh-token',
+  validateRefreshToken,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.refreshToken(req as AuthenticateReq, res, next),
 );
 export default userRouter;
