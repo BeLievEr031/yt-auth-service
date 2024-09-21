@@ -33,6 +33,13 @@ class TokenService {
       userid: id,
     });
   }
+
+  async deleteRefreshToken(id: Types.ObjectId, sub: Types.ObjectId) {
+    return await this.refreshTokenRepository.deleteOne({
+      _id: sub,
+      userid: id,
+    });
+  }
 }
 
 export default TokenService;

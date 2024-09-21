@@ -8,6 +8,7 @@ import {
 } from '../validators/auth-validator';
 import {
   AuthenticateReq,
+  ChangePasswordRequest,
   UserSignInRequest,
   UserSignUpRequest,
 } from '../types';
@@ -18,6 +19,7 @@ import Refresh from '../models/Refresh';
 import authenticate from '../middleware/authenticate';
 import UserDto from '../dtos/Auth-dto';
 import validateRefreshToken from '../middleware/validateRefreshToken';
+import parseRefreshToken from '../middleware/parseRefreshToken';
 
 const userRouter = Router();
 const authService = new AuthService(User);
@@ -58,4 +60,20 @@ userRouter.get(
   (req: Request, res: Response, next: NextFunction) =>
     authController.refreshToken(req as AuthenticateReq, res, next),
 );
+
+userRouter.delete(
+  '/logout',
+  authenticate,
+  parseRefreshToken,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.logout(req as AuthenticateReq, res, next),
+);
+
+userRouter.delete(
+  '/change-password',
+  authenticate,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.changePassword(req as ChangePasswordRequest, res, next),
+);
+
 export default userRouter;

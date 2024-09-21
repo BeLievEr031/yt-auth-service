@@ -15,8 +15,6 @@ export default expressjwt({
 
   async isRevoked(_request: Request, token) {
     try {
-      logger.info(JSON.stringify(token));
-
       const refreshToken = await Refresh.findOne({
         _id: (token?.payload as IRefreshTokenPayload).sub,
         userid: (token?.payload as IRefreshTokenPayload).id,

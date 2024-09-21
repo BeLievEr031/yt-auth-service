@@ -38,10 +38,18 @@ export interface AuthenticateReq extends Request {
   auth: {
     id: string;
     email: string;
+    sub?: string;
   };
 }
 
 export interface IRefreshTokenPayload {
   sub: string | Types.ObjectId;
   id: string;
+}
+
+export interface ChangePasswordRequest extends Request, AuthenticateReq {
+  body: {
+    oldPassword: string;
+    newPassword: string;
+  };
 }

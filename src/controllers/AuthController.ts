@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import { AuthService } from '../services';
 import {
   AuthenticateReq,
+  ChangePasswordRequest,
   User,
   UserSignInRequest,
   UserSignUpRequest,
@@ -15,6 +16,7 @@ import Config from '../config/config';
 import TokenService from '../services/TokenService';
 import { JwtPayload } from 'jsonwebtoken';
 import UserDto from '../dtos/Auth-dto';
+import { Types } from 'mongoose';
 
 class AuthController {
   constructor(
@@ -187,10 +189,68 @@ class AuthController {
     }
   }
 
+  async logout(req: AuthenticateReq, res: Response, next: NextFunction) {
+    try {
+      const { id, sub } = req.auth;
+
+      await this.tokenService.deleteRefreshToken(
+        new Types.ObjectId(id),
+        new Types.ObjectId(sub),
+      );
+
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
+      res.status(200).json({ message: 'User logged out successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
   async hashPassword(saltRound: number, password: string) {
     const salt = await bcrypt.genSalt(saltRound);
     const hashedPassword = await bcrypt.hash(password, salt);
     return hashedPassword;
+  }
+
+  async changePassword(
+    req: ChangePasswordRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+
+      const { oldPassword, newPassword } = req.body;
+      const { email } = req.auth;
+
+      const user = await this.queryService.findByEmail(email);
+      if (!user) {
+        const err = createHttpError(401, 'Invalid credentials.');
+        next(err);
+        return;
+      }
+
+      const validPassword = await bcrypt.compare(oldPassword, user.password);
+      if (!validPassword) {
+        const err = createHttpError(401, 'Invalid credentials.');
+        next(err);
+        return;
+      }
+
+      const hashedPassword = await this.hashPassword(
+        +Config.SALT_ROUND!,
+        newPassword,
+      );
+
+      user.password = hashedPassword;
+      await user.save();
+      res.status(200).json({ message: 'Password changed successfully.' });
+    } catch (error) {
+      next(error);
+    }
   }
 }
 
