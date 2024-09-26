@@ -3,12 +3,14 @@ import { Request, Response, NextFunction, Router } from 'express';
 import AuthController from '../controllers/AuthController';
 import { AuthService } from '../services';
 import {
+  forgetPasswordValidator,
   userLoginValidator,
   userRegisterValidator,
 } from '../validators/auth-validator';
 import {
   AuthenticateReq,
   ChangePasswordRequest,
+  ForgetPassword,
   UserSignInRequest,
   UserSignUpRequest,
 } from '../types';
@@ -20,48 +22,59 @@ import authenticate from '../middleware/authenticate';
 import UserDto from '../dtos/Auth-dto';
 import validateRefreshToken from '../middleware/validateRefreshToken';
 import parseRefreshToken from '../middleware/parseRefreshToken';
+import MailService from '../services/MailService';
+import Config from '../config/config';
 
-const userRouter = Router();
+const authRouter = Router();
 const authService = new AuthService(User);
 const queryService = new QueryService(User);
 const tokenService = new TokenService(Refresh);
+
+const mailService = new MailService({
+  MAIL_HOST: Config.MAIL_HOST!,
+  MAIL_PORT: Config.MAIL_PORT!,
+  MAIL_HOST_USER: Config.MAIL_HOST_USER!,
+  MAIL_HOST_PASS: Config.MAIL_HOST_PASS!,
+});
+
 const userDto = new UserDto();
 const authController = new AuthController(
   authService,
   queryService,
   tokenService,
   userDto,
+  mailService,
 );
 
-userRouter.post(
+authRouter.post(
   '/register',
   userRegisterValidator,
   (req: Request, res: Response, next: NextFunction) =>
     authController.register(req as UserSignUpRequest, res, next),
 );
 
-userRouter.post(
+authRouter.post(
   '/login',
   userLoginValidator,
   (req: Request, res: Response, next: NextFunction) =>
     authController.login(req as UserSignInRequest, res, next),
 );
 
-userRouter.get(
+authRouter.get(
   '/self',
   authenticate,
   (req: Request, res: Response, next: NextFunction) =>
     authController.self(req as AuthenticateReq, res, next),
 );
 
-userRouter.get(
+authRouter.get(
   '/refresh-token',
   validateRefreshToken,
   (req: Request, res: Response, next: NextFunction) =>
     authController.refreshToken(req as AuthenticateReq, res, next),
 );
 
-userRouter.delete(
+authRouter.delete(
   '/logout',
   authenticate,
   parseRefreshToken,
@@ -69,11 +82,18 @@ userRouter.delete(
     authController.logout(req as AuthenticateReq, res, next),
 );
 
-userRouter.delete(
+authRouter.put(
   '/change-password',
   authenticate,
   (req: Request, res: Response, next: NextFunction) =>
     authController.changePassword(req as ChangePasswordRequest, res, next),
 );
 
-export default userRouter;
+authRouter.put(
+  '/forget-password',
+  forgetPasswordValidator,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.forgetPassword(req as ForgetPassword, res, next),
+);
+
+export default authRouter;

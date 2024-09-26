@@ -3,6 +3,7 @@ import { AuthService } from '../services';
 import {
   AuthenticateReq,
   ChangePasswordRequest,
+  ForgetPassword,
   User,
   UserSignInRequest,
   UserSignUpRequest,
@@ -17,6 +18,7 @@ import TokenService from '../services/TokenService';
 import { JwtPayload } from 'jsonwebtoken';
 import UserDto from '../dtos/Auth-dto';
 import { Types } from 'mongoose';
+import MailService from '../services/MailService';
 
 class AuthController {
   constructor(
@@ -24,6 +26,7 @@ class AuthController {
     private queryService: QueryService,
     private tokenService: TokenService,
     private userDto: UserDto,
+    private mailService: MailService,
   ) {}
 
   async register(req: UserSignUpRequest, res: Response, next: NextFunction) {
@@ -205,6 +208,7 @@ class AuthController {
       next(error);
     }
   }
+
   async hashPassword(saltRound: number, password: string) {
     const salt = await bcrypt.genSalt(saltRound);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -248,6 +252,29 @@ class AuthController {
       user.password = hashedPassword;
       await user.save();
       res.status(200).json({ message: 'Password changed successfully.' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async forgetPassword(req: ForgetPassword, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+
+      const { email } = req.body;
+      const user = await this.queryService.findByEmail(email);
+      if (!user) {
+        const err = createHttpError(401, 'Invalid credentials.');
+        next(err);
+        return;
+      }
+
+      const info = await this.mailService.sendForgetPasswordMail(email);
+      res.status(200).json({ info });
     } catch (error) {
       next(error);
     }

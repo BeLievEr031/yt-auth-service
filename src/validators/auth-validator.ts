@@ -57,10 +57,10 @@ export const changePasswordValidator = checkSchema({
   // Validate and sanitize email
   oldpassword: {
     in: ['body'],
-    isEmail: {
-      errorMessage: 'Please enter a valid email address',
+    isLength: {
+      options: { min: 6 },
+      errorMessage: 'Password must be at least 6 characters long',
     },
-    normalizeEmail: true,
   },
 
   // Validate and sanitize name
@@ -70,5 +70,16 @@ export const changePasswordValidator = checkSchema({
       options: { min: 6 },
       errorMessage: 'Password must be at least 6 characters long',
     },
+  },
+});
+
+export const forgetPasswordValidator = checkSchema({
+  // Validate and sanitize email
+  email: {
+    in: ['body'],
+    isEmail: {
+      errorMessage: 'Please enter a valid email address',
+    },
+    normalizeEmail: true,
   },
 });

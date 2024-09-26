@@ -53,3 +53,16 @@ export interface ChangePasswordRequest extends Request, AuthenticateReq {
     newPassword: string;
   };
 }
+
+export interface ForgetPassword extends Request {
+  body: {
+    email: string;
+  };
+}
+
+export interface TransporterObj {
+  MAIL_HOST: string;
+  MAIL_PORT: string;
+  MAIL_HOST_USER: string;
+  MAIL_HOST_PASS: string;
+}
