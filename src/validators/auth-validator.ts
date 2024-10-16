@@ -31,6 +31,26 @@ export const userRegisterValidator = checkSchema({
       errorMessage: 'Password must be at least 6 characters long',
     },
   },
+  phone: {
+    in: ['body'],
+    isLength: {
+      options: { min: 10, max: 10 },
+      errorMessage: 'Phone number must be exactly 10 digits long',
+    },
+    isNumeric: {
+      errorMessage: 'Phone number must contain only numbers',
+    },
+  },
+  pincode: {
+    in: ['body'],
+    isLength: {
+      options: { min: 6, max: 6 },
+      errorMessage: 'PIN code must be exactly 6 digits long',
+    },
+    isNumeric: {
+      errorMessage: 'PIN code must contain only numbers',
+    },
+  },
 });
 
 export const userLoginValidator = checkSchema({

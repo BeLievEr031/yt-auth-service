@@ -37,7 +37,7 @@ class AuthController {
         return;
       }
 
-      const { email, password, name } = req.body;
+      const { email, password, name, phone, pincode } = req.body;
 
       let user = await this.queryService.findByEmail(email);
       if (user) {
@@ -50,7 +50,13 @@ class AuthController {
         +Config.SALT_ROUND!,
         password,
       );
-      user = await this.authService.create({ email, hashedPassword, name });
+      user = await this.authService.create({
+        email,
+        hashedPassword,
+        name,
+        phone,
+        pincode,
+      });
 
       logger.info(`User created successfully!!!`);
 
@@ -80,12 +86,6 @@ class AuthController {
         return;
       }
 
-      if (user.devices == 0) {
-        const err = createHttpError(429, 'Device limit exceeded.');
-        next(err);
-        return;
-      }
-
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         const err = createHttpError(401, 'Invalid credentials.');
@@ -107,7 +107,6 @@ class AuthController {
         sameSite: 'strict',
       });
 
-      user.devices = user.devices - 1;
       await user.save();
 
       const refresh = await this.tokenService.persistRefreshToken(user._id);
@@ -228,9 +227,9 @@ class AuthController {
       }
 
       const { oldPassword, newPassword } = req.body;
-      const { email } = req.auth;
+      const { email } = req.auth!;
 
-      const user = await this.queryService.findByEmail(email);
+      const user = await this.queryService.findByEmail(email as string);
       if (!user) {
         const err = createHttpError(401, 'Invalid credentials.');
         next(err);

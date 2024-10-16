@@ -1,4 +1,5 @@
-import { Request } from 'express';
+// import { Request } from 'express';
+import { Request } from 'express-jwt';
 import { Types } from 'mongoose';
 export type UserRole = 'USER' | 'ADMIN' | 'MANAGER';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'BANNED';
@@ -8,7 +9,11 @@ export interface User {
   email: string;
   name: string;
   password: string;
-  devices: number;
+  phone: string;
+  pincode: string;
+  initialPrice: number;
+  expertiseIN: string[];
+  role: 'admin' | 'worker' | 'user';
 }
 
 export interface UserSignUpRequest extends Request {
@@ -47,7 +52,7 @@ export interface IRefreshTokenPayload {
   id: string;
 }
 
-export interface ChangePasswordRequest extends Request, AuthenticateReq {
+export interface ChangePasswordRequest extends Request {
   body: {
     oldPassword: string;
     newPassword: string;
@@ -58,6 +63,30 @@ export interface ForgetPassword extends Request {
   body: {
     email: string;
   };
+}
+
+export interface Problem extends Document {
+  creatorId?: Types.ObjectId;
+  workerId?: Types.ObjectId;
+  status?: 'unassigned' | 'pending' | 'completed';
+  bidId?: Types.ObjectId;
+  title: string;
+  description: string;
+  tag: string;
+}
+
+export interface ProblemRequest extends Request {
+  body: Problem;
+}
+
+export interface Bid extends Document {
+  amount: number;
+  problemId: Types.ObjectId;
+  userId: Types.ObjectId;
+}
+
+export interface BidRequest extends Request {
+  body: Bid;
 }
 
 export interface TransporterObj {

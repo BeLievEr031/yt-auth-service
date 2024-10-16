@@ -5,6 +5,8 @@ interface IUser {
   email: string;
   name: string;
   hashedPassword: string;
+  phone: string;
+  pincode: string;
 }
 
 class AuthService {
@@ -14,6 +16,8 @@ class AuthService {
       email: user.email,
       name: user.name,
       password: user.hashedPassword,
+      phone: user.phone,
+      pincode: user.pincode,
     });
   }
 }

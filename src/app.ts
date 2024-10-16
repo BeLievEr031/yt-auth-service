@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import { morganStream } from './utils';
-import { userRouter } from './routes';
+import { authRouter, userRouter } from './routes';
 import { HttpError } from 'http-errors';
 import cookieParser from 'cookie-parser';
 import Config from './config/config';
@@ -15,6 +15,7 @@ app.use(express.static('public'));
 app.use(cookieParser());
 
 // Routes
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
