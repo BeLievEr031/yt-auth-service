@@ -39,12 +39,14 @@ export interface AuthCookie {
   refreshToken: string;
 }
 
+export interface Authenticate {
+  id: string;
+  email: string;
+  sub?: string;
+}
+
 export interface AuthenticateReq extends Request {
-  auth: {
-    id: string;
-    email: string;
-    sub?: string;
-  };
+  auth: Authenticate;
 }
 
 export interface IRefreshTokenPayload {
@@ -65,18 +67,41 @@ export interface ForgetPassword extends Request {
   };
 }
 
-export interface Problem extends Document {
+export interface Problem {
   creatorId?: Types.ObjectId;
   workerId?: Types.ObjectId;
-  status?: 'unassigned' | 'pending' | 'completed';
+  status?: 'unassigned' | 'pending' | 'completed' | 'closed';
   bidId?: Types.ObjectId;
   title: string;
   description: string;
   tag: string;
 }
 
-export interface ProblemRequest extends Request {
+export interface PostProblemRequest extends Request {
   body: Problem;
+}
+
+export interface EditProblemRequest extends Request {
+  body: Problem;
+  auth: Authenticate;
+}
+
+export interface UpdateProblemQuery {
+  status: string;
+  workerId: string;
+}
+
+export interface UpdateProblemStatusWorkerRequest extends Request {
+  query: {
+    status: string;
+    workerId: string;
+  };
+  auth: Authenticate;
+}
+
+export interface deleteProblemRequest extends Request {
+  id: string;
+  auth: Authenticate;
 }
 
 export interface Bid extends Document {
@@ -89,6 +114,12 @@ export interface BidRequest extends Request {
   body: Bid;
 }
 
+export interface fetchOneProblemRequest extends Request {
+  params: {
+    id: string;
+  };
+  auth: Authenticate;
+}
 export interface TransporterObj {
   MAIL_HOST: string;
   MAIL_PORT: string;

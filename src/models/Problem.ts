@@ -18,7 +18,7 @@ const problemShema = new Schema<Problem>(
     },
     status: {
       type: String,
-      enum: ['unassigned', 'pending', 'completed'],
+      enum: ['unassigned', 'pending', 'completed', 'closed'],
       default: 'unassigned',
     },
     title: {
