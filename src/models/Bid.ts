@@ -12,13 +12,18 @@ const bidSchema = new Schema<Bid>(
       ref: 'Problems',
       required: true,
     },
-    userId: {
+    workerId: {
       type: Schema.Types.ObjectId,
       ref: 'Users',
       required: true,
+    },
+    status: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
 );
 
 const Bid = model('Bids', bidSchema);
+export default Bid;

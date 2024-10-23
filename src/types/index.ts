@@ -43,6 +43,7 @@ export interface Authenticate {
   id: string;
   email: string;
   sub?: string;
+  role: string;
 }
 
 export interface AuthenticateReq extends Request {
@@ -104,14 +105,44 @@ export interface deleteProblemRequest extends Request {
   auth: Authenticate;
 }
 
-export interface Bid extends Document {
+export interface Bid {
   amount: number;
   problemId: Types.ObjectId;
-  userId: Types.ObjectId;
+  workerId: Types.ObjectId;
+  status?: boolean;
 }
 
-export interface BidRequest extends Request {
+export interface PlaceBidRequest extends Request {
   body: Bid;
+  auth: Authenticate;
+}
+
+export interface UpdateBidRequest extends Request {
+  params: { bidId: string };
+  body: Bid;
+  auth: Authenticate;
+}
+
+export interface DeleteBidRequest extends Request {
+  params: { bidId: string };
+  auth: Authenticate;
+}
+
+export interface BidPaginationQuery {
+  page: string;
+  limit: string;
+  sort: string;
+}
+
+export interface FetchBidRequest extends Request {
+  query: {
+    page: string;
+    limit: string;
+    sort: string;
+    sortBy: 'workerid' | 'problemid';
+    problemId?: string;
+  };
+  auth: Authenticate;
 }
 
 export interface fetchOneProblemRequest extends Request {
