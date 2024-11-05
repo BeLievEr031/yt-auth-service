@@ -6,12 +6,14 @@ import canAcccess from '../middleware/canAccess';
 import placeBidRequestValidator, {
   deleteBidRequestValidator,
   fetchBidsValidator,
+  fetchManyProblemValidator,
   updateBidRequestValidator,
 } from '../validators/bid-validator';
 import BidController from '../controllers/BidController';
 import { Request } from 'express-jwt';
 import {
   DeleteBidRequest,
+  FetchBidByProblemIdRequest,
   FetchBidRequest,
   PlaceBidRequest,
   UpdateBidRequest,
@@ -57,6 +59,20 @@ bidRouter.get(
   (req: Request, res: Response, next: NextFunction) =>
     bidController.fetchBidByWorkerIdAndProblemId(
       req as FetchBidRequest,
+      res,
+      next,
+    ),
+);
+
+// fetch all the bid by problem id
+bidRouter.get(
+  '/problem/:id',
+  authenticate,
+  fetchManyProblemValidator,
+  canAcccess(['worker']),
+  (req: Request, res: Response, next: NextFunction) =>
+    bidController.fetchAllBidsByProblemId(
+      req as FetchBidByProblemIdRequest,
       res,
       next,
     ),

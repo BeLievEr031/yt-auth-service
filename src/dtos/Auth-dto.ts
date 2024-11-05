@@ -6,6 +6,11 @@ class UserDto {
       id: user?._id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      pincode: user.pincode,
+      initialPrice: user.initialPrice,
+      expertiseIN: user.expertiseIN,
+      role: user.role,
     };
     return userData;
   }

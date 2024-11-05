@@ -3,6 +3,7 @@ import { Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import {
   DeleteBidRequest,
+  FetchBidByProblemIdRequest,
   FetchBidRequest,
   PlaceBidRequest,
   UpdateBidRequest,
@@ -123,6 +124,35 @@ class BidController {
         data: bids,
         count: total,
         message: 'Bids fetched.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async fetchAllBidsByProblemId(
+    req: FetchBidByProblemIdRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { page, limit, sort } = req.query;
+      const { id } = req.params;
+      const { bids, totalCount } = await this.bidService.fetchBidsByProblemId(
+        ToObjectId(id),
+        Number(page),
+        Number(limit),
+        sort,
+      );
+
+      res.status(200).json({
+        bids,
+        totalCount,
+        message: 'bid fetch successfully',
       });
     } catch (error) {
       next(error);

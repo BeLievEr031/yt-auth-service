@@ -5,16 +5,16 @@ const problemShema = new Schema<Problem>(
   {
     creatorId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Users',
       required: true,
     },
     workerId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Users',
     },
     bidId: {
       type: Schema.Types.ObjectId,
-      ref: 'Bid',
+      ref: 'Bids',
     },
     status: {
       type: String,

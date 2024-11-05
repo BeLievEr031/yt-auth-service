@@ -9,6 +9,7 @@ const userSchema = new Schema<User>(
       unique: true,
       match: [/\S+@\S+\.\S+/, 'Please enter a valid email address'],
     },
+
     name: {
       type: String,
       required: true,
@@ -20,23 +21,28 @@ const userSchema = new Schema<User>(
       required: true,
       minlength: 6,
     },
+
     expertiseIN: {
       type: [String],
     },
 
     initialPrice: {
       type: Number,
+      default: 0,
     },
+
     phone: {
       type: String,
       required: true,
       match: [/\d{10}/, 'Please enter a valid 10 digit phone number'],
     },
+
     pincode: {
       type: String,
       required: true,
       match: [/\d{6}/, 'Please enter a valid 6 digit pincode'],
     },
+
     role: {
       type: String,
       enum: ['admin', 'worker', 'user'],
@@ -49,6 +55,6 @@ const userSchema = new Schema<User>(
   },
 );
 
-const User = model<User>('User', userSchema);
+const User = model<User>('Users', userSchema);
 
 export default User;

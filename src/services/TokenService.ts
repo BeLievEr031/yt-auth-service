@@ -13,7 +13,7 @@ class TokenService {
     );
     const accessToken = jwt.sign(payload, secretKey, {
       algorithm: 'RS256',
-      expiresIn: '1h',
+      expiresIn: '24h',
       issuer: 'auth-service',
     });
     return accessToken;

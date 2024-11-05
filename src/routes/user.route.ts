@@ -11,14 +11,18 @@ import {
 } from '../validators/problem-validatore';
 import UserService from '../services/UserService';
 import Problem from '../models/Problem';
+import Bid from '../models/Bid';
 import {
+  AuthenticateReq,
   deleteProblemRequest,
+  FetchManyProblemRequest,
   fetchOneProblemRequest,
   UpdateProblemStatusWorkerRequest,
 } from '../types';
+import { fetchManyProblemValidator } from '../validators/bid-validator';
 
 const userRouter = Router();
-const userService = new UserService(Problem);
+const userService = new UserService(Problem, Bid);
 const userController = new UserController(userService);
 
 userRouter.post(
@@ -27,6 +31,14 @@ userRouter.post(
   problemRequestValidator,
   (req: Request, res: Response, next: NextFunction) =>
     userController.postProblem(req, res, next),
+);
+
+userRouter.get(
+  '/problem',
+  authenticate,
+  fetchManyProblemValidator,
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.fetchManyProblems(req as FetchManyProblemRequest, res, next),
 );
 
 userRouter.get(
@@ -59,6 +71,20 @@ userRouter.delete(
   deleteProblemRequestValidator,
   (req: Request, res: Response, next: NextFunction) =>
     userController.deleteProblem(req as deleteProblemRequest, res, next),
+);
+
+userRouter.get(
+  '/dashboard',
+  authenticate,
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.userDashboardData(req as AuthenticateReq, res, next),
+);
+
+userRouter.get(
+  '/last-problem',
+  authenticate,
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.getLastProblemBid(req as AuthenticateReq, res, next),
 );
 
 export default userRouter;

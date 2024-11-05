@@ -71,6 +71,26 @@ class BidService {
       bids,
     };
   }
+
+  async fetchBidsByProblemId(
+    problemId: Types.ObjectId,
+    page: number,
+    limit: number,
+    sort: string,
+  ) {
+    const totalCount = await this.bidRepository.countDocuments({ problemId });
+    const bids = await this.bidRepository
+      .find({ problemId })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort({ amount: sort === 'desc' ? -1 : 1 })
+      .populate('workerId');
+
+    return {
+      totalCount,
+      bids,
+    };
+  }
 }
 
 export default BidService;

@@ -145,12 +145,63 @@ export interface FetchBidRequest extends Request {
   auth: Authenticate;
 }
 
+export interface FetchBidByProblemIdRequest extends Request {
+  query: {
+    page: string;
+    limit: string;
+    sort: string;
+  };
+  params: {
+    id: string;
+  };
+  auth: Authenticate;
+}
+
+export interface FetchManyProblemRequest extends Request {
+  auth: Authenticate;
+  query: {
+    page: string;
+    limit: string;
+    sort: 'asc' | 'desc';
+  };
+}
+
 export interface fetchOneProblemRequest extends Request {
   params: {
     id: string;
   };
   auth: Authenticate;
 }
+
+export interface FetchWorkersRequest extends Request {
+  query: {
+    page: string;
+    limit: string;
+    sort: string;
+    sortBy?: 'initialPrice' | 'expertiseIN';
+    expertise?: string;
+  };
+  auth: Authenticate;
+}
+
+export interface FetchWorkerBidsRequest extends Request {
+  query: {
+    page: string;
+    limit: string;
+    sort: string;
+    sortBy?: 'initialPrice' | 'expertiseIN';
+    expertise?: string;
+  };
+  auth: Authenticate;
+}
+
+export interface CheckForBidPlacedOrNotRequest extends Request {
+  params: {
+    id: string;
+  };
+  auth: Authenticate;
+}
+
 export interface TransporterObj {
   MAIL_HOST: string;
   MAIL_PORT: string;

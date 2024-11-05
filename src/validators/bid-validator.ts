@@ -135,4 +135,28 @@ export const fetchBidsValidator = checkSchema({
   },
 });
 
+export const fetchManyProblemValidator = checkSchema({
+  page: {
+    in: ['query'],
+    isInt: {
+      errorMessage: 'Page must be an integer',
+    },
+    toInt: true, // Convert string to integer
+  },
+  limit: {
+    in: ['query'],
+    isInt: {
+      errorMessage: 'Limit must be an integer',
+    },
+    toInt: true, // Convert string to integer
+  },
+  sort: {
+    in: ['query'],
+    isIn: {
+      options: [['asc', 'desc']],
+      errorMessage: 'Sort must be either "asc" or "desc"',
+    },
+  },
+});
+
 export default placeBidRequestValidator;

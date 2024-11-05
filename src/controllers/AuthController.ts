@@ -96,6 +96,9 @@ class AuthController {
       const payload: JwtPayload = {
         id: user._id,
         email: user.email,
+        role: user.role,
+        phone: user.phone,
+        pincode: user.pincode,
       };
 
       const accessToken = this.tokenService.generateAccessToken(payload);
@@ -103,7 +106,7 @@ class AuthController {
       res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: true,
-        maxAge: 1000 * 60 * 60,
+        maxAge: 1000 * 60 * 60 * 24,
         sameSite: 'strict',
       });
 

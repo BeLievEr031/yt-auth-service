@@ -1,8 +1,10 @@
 import { Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import {
+  AuthenticateReq,
   deleteProblemRequest,
   EditProblemRequest,
+  FetchManyProblemRequest,
   fetchOneProblemRequest,
   PostProblemRequest,
   UpdateProblemStatusWorkerRequest,
@@ -34,6 +36,34 @@ class UserController {
       const problem = await this.userService.postProblem(problemData);
 
       res.status(200).json({ data: problem, user: req.auth });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async fetchManyProblems(
+    req: FetchManyProblemRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+      const { limit, page, sort } = req.query;
+      const userid = req.auth.id;
+      const problem = await this.userService.fetchProblems(
+        ToObjectId(userid),
+        +page,
+        +limit,
+        sort,
+      );
+
+      res
+        .status(200)
+        .send({ data: problem, message: 'Problem fetched successfully' });
     } catch (error) {
       next(error);
     }
@@ -165,6 +195,60 @@ class UserController {
 
       res.status(200).json({
         data: null,
+        message: 'Problem deleted successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userDashboardData(
+    req: AuthenticateReq,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+      const { id: userid } = req.auth;
+
+      const { totalRaisedProblems, totalSolvedProlems } =
+        await this.userService.userDashboardData(ToObjectId(userid));
+
+      res.status(200).json({
+        data: {
+          totalRaisedProblems,
+          totalSolvedProlems,
+        },
+        message: 'Problem deleted successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getLastProblemBid(
+    req: AuthenticateReq,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+      const { id: userid } = req.auth;
+
+      const lastEntry = await this.userService.getLastProblemBid(
+        ToObjectId(userid),
+      );
+
+      res.status(200).json({
+        data: lastEntry,
         message: 'Problem deleted successfully',
       });
     } catch (error) {
