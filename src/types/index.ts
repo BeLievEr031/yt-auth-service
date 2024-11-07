@@ -76,6 +76,7 @@ export interface Problem {
   title: string;
   description: string;
   tag: string;
+  imageSrc: string;
 }
 
 export interface PostProblemRequest extends Request {
@@ -198,6 +199,23 @@ export interface FetchWorkerBidsRequest extends Request {
 export interface CheckForBidPlacedOrNotRequest extends Request {
   params: {
     id: string;
+  };
+  auth: Authenticate;
+}
+
+export interface AcceptBidRequest extends Request {
+  params: {
+    id: string;
+  };
+  body: {
+    problemId: string;
+  };
+  auth: Authenticate;
+}
+
+export interface BecomeWorkerRequest extends Request {
+  body: {
+    initialPrice: number;
   };
   auth: Authenticate;
 }

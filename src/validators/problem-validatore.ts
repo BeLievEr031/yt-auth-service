@@ -1,5 +1,4 @@
 import { checkSchema } from 'express-validator';
-
 export const problemRequestValidator = checkSchema({
   // Validate and sanitize email
   title: {
@@ -141,6 +140,16 @@ export const deleteProblemRequestValidator = checkSchema({
     isLength: {
       options: { min: 1, max: 50 }, // Adjust max length as needed
       errorMessage: 'id must be between 1 and 50 characters long',
+    },
+    trim: true,
+  },
+});
+
+export const becomeWorkerValidator = checkSchema({
+  initialPrice: {
+    in: ['body'],
+    isNumeric: {
+      errorMessage: 'initialPrice must be a number',
     },
     trim: true,
   },

@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import {
   AuthenticateReq,
+  BecomeWorkerRequest,
   deleteProblemRequest,
   EditProblemRequest,
   FetchManyProblemRequest,
@@ -9,12 +10,30 @@ import {
   PostProblemRequest,
   UpdateProblemStatusWorkerRequest,
 } from '../types';
+import { Request } from 'express-jwt';
 import UserService from '../services/UserService';
 import { ToObjectId } from '../utils';
 import createHttpError from 'http-errors';
+import Config from '../config/config';
 
 class UserController {
   constructor(private userService: UserService) {}
+
+  generateProblemSignUrl(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signature = Config.cloudinary.utils.api_sign_request(
+        { timestamp },
+        Config.CLOUDINARY_API_SECRET!,
+      );
+
+      res
+        .status(200)
+        .json({ signature, timestamp, message: 'Signed url generated.' });
+    } catch (error) {
+      next(error);
+    }
+  }
   async postProblem(
     req: PostProblemRequest,
     res: Response,
@@ -31,7 +50,10 @@ class UserController {
         title: req.body.title,
         description: req.body.description,
         tag: req.body.tag,
+        imageSrc: req.body.imageSrc,
       };
+
+      console.log(req.files);
 
       const problem = await this.userService.postProblem(problemData);
 
@@ -54,11 +76,13 @@ class UserController {
       }
       const { limit, page, sort } = req.query;
       const userid = req.auth.id;
+      const role = req.auth.role;
       const problem = await this.userService.fetchProblems(
         ToObjectId(userid),
         +page,
         +limit,
         sort,
+        role,
       );
 
       res
@@ -115,6 +139,7 @@ class UserController {
         title: req.body.title,
         description: req.body.description,
         tag: req.body.tag,
+        imageSrc: req.body.imageSrc,
       };
 
       const editedProblem = await this.userService.editProblem(
@@ -249,6 +274,33 @@ class UserController {
 
       res.status(200).json({
         data: lastEntry,
+        message: 'Problem deleted successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async becomeWorker(
+    req: BecomeWorkerRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+      const { initialPrice } = req.body;
+      const { id: userid } = req.auth;
+      const worker = await this.userService.becomeWorker(
+        ToObjectId(userid),
+        initialPrice,
+      );
+
+      res.status(200).json({
+        data: worker,
         message: 'Problem deleted successfully',
       });
     } catch (error) {

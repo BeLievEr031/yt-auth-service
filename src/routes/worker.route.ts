@@ -32,7 +32,7 @@ workerRouter.get(
 workerRouter.get(
   '/my-bids',
   authenticate,
-  canAcccess(['worker']),
+  canAcccess(['worker', 'user']),
   (req: Request, res: Response, next: NextFunction) =>
     workerController.fetchWorkerBid(req as FetchWorkerBidsRequest, res, next),
 );

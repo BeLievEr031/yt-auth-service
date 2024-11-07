@@ -27,6 +27,10 @@ const problemShema = new Schema<Problem>(
       minlength: 5,
       maxlength: 100,
     },
+    imageSrc: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
       required: true,

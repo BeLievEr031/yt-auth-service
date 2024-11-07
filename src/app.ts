@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import Config from './config/config';
 import bidRouter from './routes/bid.route';
 import workerRouter from './routes/worker.route';
+import fileUpload from 'express-fileupload';
 
 const app = express();
 app.use(
@@ -17,6 +18,7 @@ app.use(
   }),
 );
 
+app.use(fileUpload());
 app.use(morgan('tiny', { stream: morganStream }));
 
 app.use(express.json({ limit: '1MB' }));

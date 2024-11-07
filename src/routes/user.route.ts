@@ -4,6 +4,7 @@ import { Request } from 'express-jwt';
 import authenticate from '../middleware/authenticate';
 import UserController from '../controllers/UserController';
 import {
+  becomeWorkerValidator,
   deleteProblemRequestValidator,
   getProblemRequestValidator,
   problemRequestValidator,
@@ -14,16 +15,26 @@ import Problem from '../models/Problem';
 import Bid from '../models/Bid';
 import {
   AuthenticateReq,
+  BecomeWorkerRequest,
   deleteProblemRequest,
   FetchManyProblemRequest,
   fetchOneProblemRequest,
   UpdateProblemStatusWorkerRequest,
 } from '../types';
 import { fetchManyProblemValidator } from '../validators/bid-validator';
+import canAcccess from '../middleware/canAccess';
+import User from '../models/User';
 
 const userRouter = Router();
-const userService = new UserService(Problem, Bid);
+const userService = new UserService(User, Problem, Bid);
 const userController = new UserController(userService);
+
+userRouter.post(
+  '/problem-sign-url',
+  authenticate,
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.generateProblemSignUrl(req, res, next),
+);
 
 userRouter.post(
   '/problem',
@@ -85,6 +96,15 @@ userRouter.get(
   authenticate,
   (req: Request, res: Response, next: NextFunction) =>
     userController.getLastProblemBid(req as AuthenticateReq, res, next),
+);
+
+userRouter.put(
+  '/become-worker',
+  becomeWorkerValidator,
+  authenticate,
+  canAcccess(['user']),
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.becomeWorker(req as BecomeWorkerRequest, res, next),
 );
 
 export default userRouter;

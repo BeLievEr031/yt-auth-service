@@ -4,6 +4,8 @@ import { Router } from 'express';
 import authenticate from '../middleware/authenticate';
 import canAcccess from '../middleware/canAccess';
 import placeBidRequestValidator, {
+  acceptBidValidator,
+  // acceptBidValidator,
   deleteBidRequestValidator,
   fetchBidsValidator,
   fetchManyProblemValidator,
@@ -12,6 +14,8 @@ import placeBidRequestValidator, {
 import BidController from '../controllers/BidController';
 import { Request } from 'express-jwt';
 import {
+  AcceptBidRequest,
+  // AcceptBidRequest,
   DeleteBidRequest,
   FetchBidByProblemIdRequest,
   FetchBidRequest,
@@ -20,9 +24,10 @@ import {
 } from '../types';
 import BidService from '../services/BidService';
 import Bid from '../models/Bid';
+import Problem from '../models/Problem';
 
 const bidRouter = Router();
-const bidService = new BidService(Bid);
+const bidService = new BidService(Bid, Problem);
 const bidController = new BidController(bidService);
 bidRouter.post(
   '/',
@@ -69,13 +74,22 @@ bidRouter.get(
   '/problem/:id',
   authenticate,
   fetchManyProblemValidator,
-  canAcccess(['worker']),
+  canAcccess(['worker', 'user']),
   (req: Request, res: Response, next: NextFunction) =>
     bidController.fetchAllBidsByProblemId(
       req as FetchBidByProblemIdRequest,
       res,
       next,
     ),
+);
+
+bidRouter.post(
+  '/accept/:id',
+  authenticate,
+  acceptBidValidator,
+  canAcccess(['user']),
+  (req: Request, res: Response, next: NextFunction) =>
+    bidController.acceptBid(req as AcceptBidRequest, res, next),
 );
 
 export default bidRouter;

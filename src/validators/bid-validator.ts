@@ -159,4 +159,24 @@ export const fetchManyProblemValidator = checkSchema({
   },
 });
 
+export const acceptBidValidator = checkSchema({
+  id: {
+    in: ['params'],
+    isMongoId: {
+      errorMessage: 'bid ID must be a valid MongoDB ObjectId',
+    },
+    notEmpty: {
+      errorMessage: 'bid ID is required',
+    },
+  },
+  // problemId: {
+  //   in: ['body'],
+  //   isMongoId: {
+  //     errorMessage: 'problemId must be a valid MongoDB ObjectId',
+  //   },
+  //   notEmpty: {
+  //     errorMessage: 'problemId is required',
+  //   },
+  // },
+});
 export default placeBidRequestValidator;

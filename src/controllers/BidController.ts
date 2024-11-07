@@ -2,6 +2,8 @@ import { ToObjectId } from './../utils/index';
 import { Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import {
+  AcceptBidRequest,
+  // AcceptBidRequest,
   DeleteBidRequest,
   FetchBidByProblemIdRequest,
   FetchBidRequest,
@@ -152,6 +154,24 @@ class BidController {
       res.status(200).json({
         bids,
         totalCount,
+        message: 'bid fetch successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async acceptBid(req: AcceptBidRequest, res: Response, next: NextFunction) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { id } = req.params;
+      const acceptedBid = await this.bidService.acceptBid(ToObjectId(id));
+
+      res.status(200).json({
+        data: acceptedBid,
         message: 'bid fetch successfully',
       });
     } catch (error) {

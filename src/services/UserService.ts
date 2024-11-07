@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import Problem from '../models/Problem';
 import { Problem as IProblem } from '../types';
 import Bid from '../models/Bid';
+import User from '../models/User';
 
 interface FetchProblem {
   _id: string; // or ObjectId if you're using Mongoose
@@ -30,6 +31,7 @@ interface ProblemWithBids {
 
 class UserService {
   constructor(
+    private userRepository: typeof User,
     private problemRepository: typeof Problem,
     private bidRepository: typeof Bid,
   ) {}
@@ -43,7 +45,59 @@ class UserService {
     page: number,
     limit: number,
     sort: string,
+    role: string,
   ) {
+    if (role === 'worker') {
+      const problemsWithBids =
+        await this.problemRepository.aggregate<FetchProblem>([
+          {
+            $match: {},
+          },
+          {
+            $lookup: {
+              from: 'bids', // Name of the bids collection
+              localField: '_id',
+              foreignField: 'problemId', // Field in the bids collection that references the problem
+              as: 'bids',
+            },
+          },
+          {
+            $addFields: {
+              totalBids: { $size: '$bids' }, // Count the number of bids
+            },
+          },
+          {
+            $project: {
+              bids: 0, // Optionally exclude the bids array from the result
+            },
+          },
+          {
+            $sort: {
+              createdAt: sort === 'desc' ? -1 : 1,
+            },
+          },
+          {
+            $facet: {
+              results: [
+                {
+                  $skip: (page - 1) * limit, // Calculate the number of documents to skip
+                },
+                {
+                  $limit: limit, // Limit the number of documents returned
+                },
+              ],
+              totalCount: [
+                {
+                  $count: 'count', // Count the total number of problems
+                },
+              ],
+            },
+          },
+        ]);
+
+      return problemsWithBids;
+    }
+
     const problemsWithBids =
       await this.problemRepository.aggregate<FetchProblem>([
         {
@@ -193,12 +247,28 @@ class UserService {
     const topFiveBids = await this.bidRepository
       .find({ problemId: lastProblemEntry?._id })
       .limit(5)
-      .sort({ amount: -1 })
+      .sort({ amount: 1 })
       .populate({
         path: 'workerId',
         select: 'name phone email',
       });
     return { lastProblemEntry, topFiveBids };
+  }
+
+  async becomeWorker(userid: Types.ObjectId, initialPrice: number) {
+    return await this.userRepository.findByIdAndUpdate(
+      { _id: userid },
+      {
+        $set: {
+          initialPrice,
+          role: 'worker',
+          // expertiseIN: expertise,
+        },
+      },
+      {
+        new: true,
+      },
+    );
   }
 }
 

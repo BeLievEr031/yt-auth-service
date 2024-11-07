@@ -1,13 +1,17 @@
 import { Types } from 'mongoose';
 import Bid from '../models/Bid';
 import { Bid as IBid } from '../types';
+import Problem from '../models/Problem';
 interface AggregationResult {
   totalCount: { count: number }[];
   bids: IBid[];
 }
 
 class BidService {
-  constructor(private bidRepository: typeof Bid) {}
+  constructor(
+    private bidRepository: typeof Bid,
+    private problemRepository: typeof Problem,
+  ) {}
   async placeBid(bidData: IBid) {
     return await this.bidRepository.create(bidData);
   }
@@ -90,6 +94,32 @@ class BidService {
       totalCount,
       bids,
     };
+  }
+
+  async acceptBid(bid: Types.ObjectId) {
+    const bidAccept = await this.bidRepository.findByIdAndUpdate(
+      {
+        _id: bid,
+      },
+      {
+        $set: {
+          status: true,
+        },
+      },
+      {
+        new: true,
+      },
+    );
+
+    await this.problemRepository.findByIdAndUpdate(
+      { _id: bidAccept?.problemId },
+      {
+        $set: {
+          status: 'pending',
+        },
+      },
+    );
+    return bidAccept;
   }
 }
 
