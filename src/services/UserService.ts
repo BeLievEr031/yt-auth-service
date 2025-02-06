@@ -47,6 +47,8 @@ class UserService {
     sort: string,
     role: string,
   ) {
+    console.log(role);
+
     if (role === 'worker') {
       const problemsWithBids =
         await this.problemRepository.aggregate<FetchProblem>([
